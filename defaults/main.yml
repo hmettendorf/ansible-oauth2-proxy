@@ -6,7 +6,7 @@ oauth2_dir: "/var/oauth2_proxy"
 oauth2_dir_tmp: "/var/oauth2_proxy/tmp"
 oauth2_dir_log: "/var/log/oauth2-proxy/"
 oauth2_config_path: "/var/oauth2_proxy/oauth2_config.cfg"
-oauth2_compress_filename: "{{ oaut2_proxy_http | basename }}"
+oauth2_compress_filename: "{{ oauth2_proxy_http | basename }}"
 oauth2_filename: "{{ oauth2_compress_filename |replace('.tar.gz', '') }}"
 
 # See for all options https://raw.githubusercontent.com/bitly/oauth2_proxy/master/contrib/oauth2_proxy.cfg.example
