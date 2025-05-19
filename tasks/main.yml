@@ -1,13 +1,13 @@
 ---
 
 - name: Create the directories for site specific configurations
-  user:
+  ansible.builtin.user:
     name="{{ oauth2_user }}"
     shell="/bin/false"
     home="{{ oauth2_dir }}"
 
 - name: Create the directories for site specific configurations
-  file:
+  ansible.builtin.file:
     path="{{ item }}"
     state=directory
     owner="{{ oauth2_user }}"
@@ -19,21 +19,21 @@
      - "{{ oauth2_dir_log }}"
 
 - name: Download compressed oauth2 binary
-  get_url:
+  ansible.builtin.get_url:
     url="{{ oaut2_proxy_http }}"
-    sha256sum="{{ oaut2_proxy_http_sha256 | default(omit) }}"
+    checksum="{{ oaut2_proxy_http_sha256 | default(omit) }}"
     dest="{{ oauth2_dir_tmp }}"
     owner="{{ oauth2_user }}"
 
 - name: unarchive oauth2 binary
-  unarchive:
+  ansible.builtin.unarchive:
     src="{{ oauth2_dir_tmp }}/{{ oauth2_compress_filename }}"
     dest="{{ oauth2_dir }}/"
     creates="{{ oauth2_dir }}/{{ oauth2_compress_filename }}"
     copy=no
 
 - name: Create current symlink
-  file:
+  ansible.builtin.file:
     src="{{ oauth2_dir }}/{{ oauth2_filename }}"
     dest="{{ oauth2_dir }}/current"
     owner="{{ oauth2_user }}"
@@ -43,7 +43,7 @@
     - oauth2-proxy restart
 
 - name: Deploy init.d script
-  template:
+  ansible.builtin.template:
     src="init.d.sh.j2.sh"
     dest="/etc/init.d/oauth2-proxy"
     mode="0755"
@@ -52,13 +52,13 @@
     - oauth2-proxy restart
 
 - name: Reload Systemd
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload=yes
     name=oauth2-proxy
   when: initd_script.changed and ansible_service_mgr == 'systemd'
 
 - name: Deploy Config
-  template:
+  ansible.builtin.template:
     src="config.j2"
     dest="{{ oauth2_config_path }}"
     owner="{{ oauth2_user }}"
@@ -67,7 +67,7 @@
     - oauth2-proxy restart
 
 - name: Service start
-  service:
+  ansible.builtin.service:
     name="oauth2-proxy"
     state="started"
     enabled="True"
