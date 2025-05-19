@@ -2,72 +2,74 @@
 
 - name: Create the directories for site specific configurations
   ansible.builtin.user:
-    name="{{ oauth2_user }}"
-    shell="/bin/false"
-    home="{{ oauth2_dir }}"
+    name: "{{ oauth2_user }}"
+    shell: "/bin/false"
+    home: "{{ oauth2_dir }}"
 
 - name: Create the directories for site specific configurations
   ansible.builtin.file:
-    path="{{ item }}"
-    state=directory
-    owner="{{ oauth2_user }}"
-    group=root
-    mode=0750
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ oauth2_user }}"
+    group: root
+    mode: "0750"
   with_items:
-     - "{{ oauth2_dir }}"
-     - "{{ oauth2_dir_tmp }}"
-     - "{{ oauth2_dir_log }}"
+    - "{{ oauth2_dir }}"
+    - "{{ oauth2_dir_tmp }}"
+    - "{{ oauth2_dir_log }}"
 
 - name: Download compressed oauth2 binary
   ansible.builtin.get_url:
-    url="{{ oauth2_proxy_http }}"
-    checksum="{{ oauth2_proxy_http_checksum | default(omit) }}"
-    dest="{{ oauth2_dir_tmp }}"
-    owner="{{ oauth2_user }}"
+    url: "{{ oauth2_proxy_http }}"
+    checksum: "{{ oauth2_proxy_http_checksum | default(omit) }}"
+    dest: "{{ oauth2_dir_tmp }}"
+    owner: "{{ oauth2_user }}"
+    group: root
+    mode: "0750"
 
-- name: unarchive oauth2 binary
+- name: Unarchive oauth2 binary
   ansible.builtin.unarchive:
-    src="{{ oauth2_dir_tmp }}/{{ oauth2_compress_filename }}"
-    dest="{{ oauth2_dir }}/"
-    creates="{{ oauth2_dir }}/{{ oauth2_compress_filename }}"
-    copy=no
+    src: "{{ oauth2_dir_tmp }}/{{ oauth2_compress_filename }}"
+    dest: "{{ oauth2_dir }}/"
+    creates: "{{ oauth2_dir }}/{{ oauth2_compress_filename }}"
+    copy: false
 
 - name: Create current symlink
   ansible.builtin.file:
-    src="{{ oauth2_dir }}/{{ oauth2_filename }}"
-    dest="{{ oauth2_dir }}/current"
-    owner="{{ oauth2_user }}"
-    mode="0755"
-    state="link"
+    src: "{{ oauth2_dir }}/{{ oauth2_filename }}"
+    dest: "{{ oauth2_dir }}/current"
+    owner: "{{ oauth2_user }}"
+    mode: "0755"
+    state: "link"
   notify:
     - oauth2-proxy restart
 
 - name: Deploy init.d script
   ansible.builtin.template:
-    src="init.d.sh.j2.sh"
-    dest="/etc/init.d/oauth2-proxy"
-    mode="0755"
+    src: "init.d.sh.j2.sh"
+    dest: "/etc/init.d/oauth2-proxy"
+    mode: "0755"
   register: initd_script
   notify:
     - oauth2-proxy restart
 
 - name: Reload Systemd
   ansible.builtin.systemd:
-    daemon_reload=yes
-    name=oauth2-proxy
+    daemon_reload: true
+    name: oauth2-proxy
   when: initd_script.changed and ansible_service_mgr == 'systemd'
 
 - name: Deploy Config
   ansible.builtin.template:
-    src="config.j2"
-    dest="{{ oauth2_config_path }}"
-    owner="{{ oauth2_user }}"
-    mode="0600"
+    src: "config.j2"
+    dest: "{{ oauth2_config_path }}"
+    owner: "{{ oauth2_user }}"
+    mode: "0600"
   notify:
     - oauth2-proxy restart
 
 - name: Service start
   ansible.builtin.service:
-    name="oauth2-proxy"
-    state="started"
-    enabled="True"
+    name: "oauth2-proxy"
+    state: "started"
+    enabled: "True"
