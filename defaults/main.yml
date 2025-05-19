@@ -1,6 +1,6 @@
 ---
-oaut2_proxy_http: "https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.9.0/oauth2-proxy-v7.9.0.linux-amd64.tar.gz"
-oaut2_proxy_http_sha256: "d8eb7c032381256e30e89c0eb724b1166a82d84e055bd31ff03a945fba989ecb"
+oauth2_proxy_http: "https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.9.0/oauth2-proxy-v7.9.0.linux-amd64.tar.gz"
+oauth2_proxy_http_checksum: "sha256:d8eb7c032381256e30e89c0eb724b1166a82d84e055bd31ff03a945fba989ecb"
 oauth2_user: "oauth2"
 oauth2_dir: "/var/oauth2_proxy"
 oauth2_dir_tmp: "/var/oauth2_proxy/tmp"

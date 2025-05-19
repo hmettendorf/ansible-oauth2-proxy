@@ -20,8 +20,8 @@
 
 - name: Download compressed oauth2 binary
   ansible.builtin.get_url:
-    url="{{ oaut2_proxy_http }}"
-    checksum="{{ oaut2_proxy_http_sha256 | default(omit) }}"
+    url="{{ oauth2_proxy_http }}"
+    checksum="{{ oauth2_proxy_http_checksum | default(omit) }}"
     dest="{{ oauth2_dir_tmp }}"
     owner="{{ oauth2_user }}"
 
